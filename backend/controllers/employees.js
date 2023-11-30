@@ -18,7 +18,18 @@ let employees = [
 ];
 
 export const getEmployees = (req, res) => {
-  res.send(employees);
+  const { page = 1, pageSize = 2 } = req.query;
+  const startIndex = (page - 1) * pageSize;
+  const endIndex = page * pageSize;
+  const paginatedEmployees = employees.slice(startIndex, endIndex);
+  
+  const totalEmployees = employees.length;
+
+  res.send({
+    data: paginatedEmployees,
+    totalEmployees: totalEmployees,
+    isLastPage: endIndex >= totalEmployees,
+  });
 };
 
 export const showEmployee = (req, res) => {
@@ -64,7 +75,7 @@ export const updateEmployee = (req, res) => {
   const { name, email, country, contact } = req.body;
 
   if(!employee) {
-    res.status(400).send("Employee updated!");
+    res.status(400).send("Employee not found!");
   }
 
   employee.name    = name;
@@ -72,5 +83,5 @@ export const updateEmployee = (req, res) => {
   employee.country = country;
   employee.contact = contact;
 
-  res.send(employee);
+  res.send("Employee updated!");
 };
